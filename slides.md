@@ -807,19 +807,9 @@ kodee:
   position: corner
 ---
 
-# What makes Kolin & Spring interop comfortable?
+# What makes Kotlin & Spring interop comfortable?
 
-<div class="mt-10% flex flex-col justify-center items-center">
-<VClicks>
-
-<div class="text-5xl text-red">final</div>
-<p class="z-40 absolute top-30 right-20 h-[200px] w-[200px]">
-Classes, methods and properties are final by default!
-</p>
-<Arrow x1="500" y1="220" x2="500" y2="300" width="3" />
-<div class="mt-[90px] text-5xl text-gray">kotlin("plugin.spring")</div>
-</VClicks>
-</div>
+<SpringInteropDiagram class="mt-6" />
 
 <!--
 - There is one things that causes friction for Kotlin + Spring interop
