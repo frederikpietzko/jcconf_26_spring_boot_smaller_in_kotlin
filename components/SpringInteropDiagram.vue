@@ -21,35 +21,40 @@
       <text class="section-label" x="40" y="30">KOTLIN</text>
       <text class="section-label" x="760" y="30">SPRING</text>
 
-      <g class="card">
+      <g v-click="1" class="card">
         <rect x="40" y="50" width="380" height="120" rx="16"/>
         <text class="card-title" x="70" y="90">class PetService</text>
         <text class="keyword" x="70" y="128">final</text>
         <text class="muted" x="150" y="128">by default</text>
       </g>
 
-      <path class="wire blocked" d="M430 110 H745" marker-end="url(#interop-arrow-blocked)"/>
-      <text class="wire-label blocked-label" x="500" y="92">cannot subclass</text>
-
-      <g class="card card--blocked">
+      <g v-click="2" class="card card--blocked">
         <rect x="760" y="50" width="400" height="120" rx="16"/>
         <text class="card-title" x="790" y="90">CGLIB proxy</text>
         <text class="muted" x="790" y="128">@Transactional, @Configuration, ...</text>
       </g>
 
-      <g class="plugin">
-        <rect x="330" y="200" width="540" height="76" rx="14"/>
-        <text class="plugin-title" x="600" y="250">kotlin("plugin.spring")</text>
+      <g v-click="3">
+        <path class="wire blocked" d="M430 110 H745" marker-end="url(#interop-arrow-blocked)"/>
+        <text class="wire-label blocked-label" x="500" y="92">cannot subclass</text>
       </g>
-      <path class="wire" d="M230 176 V230 H320" marker-end="url(#interop-arrow)"/>
-      <path class="wire" d="M880 230 H970 V176" marker-end="url(#interop-arrow)"/>
 
-      <path class="wire" d="M600 290 V352" marker-end="url(#interop-arrow)"/>
+      <g v-click="4">
+        <g class="plugin">
+          <rect x="330" y="200" width="540" height="76" rx="14"/>
+          <text class="plugin-title" x="600" y="250">kotlin("plugin.spring")</text>
+        </g>
+        <path class="wire" d="M230 176 V238 H320" marker-end="url(#interop-arrow)"/>
+        <path class="wire" d="M880 238 H970 V176" marker-end="url(#interop-arrow)"/>
+      </g>
 
-      <g class="card card--fixed">
-        <rect x="330" y="366" width="540" height="76" rx="14"/>
-        <text class="keyword fixed" x="366" y="413">open</text>
-        <text class="muted" x="466" y="413">for Spring annotated classes &amp; methods</text>
+      <g v-click="5">
+        <path class="wire" d="M600 276 V352" marker-end="url(#interop-arrow)"/>
+        <g class="card card--fixed">
+          <rect x="330" y="366" width="540" height="76" rx="14"/>
+          <text class="keyword fixed" x="366" y="413">open</text>
+          <text class="muted" x="466" y="413">for Spring annotated classes &amp; methods</text>
+        </g>
       </g>
     </svg>
   </div>
@@ -69,6 +74,10 @@ svg {
   display: block;
   width: 100%;
   height: auto;
+}
+
+svg g {
+  transition: opacity 300ms ease;
 }
 
 .section-label, .muted, .wire-label, .plugin-title, .keyword {

@@ -812,12 +812,17 @@ kodee:
 <SpringInteropDiagram class="mt-6" />
 
 <!--
-- There is one things that causes friction for Kotlin + Spring interop
-- final!
-- because classes, methods and properties are final by default in Kotlin
-- it would be very inconvenient to use the `open keyword` everywhere when using Spring
-- instead use the `kotlin("plugin.spring")` plugin
-- it automatically configures the allOpen plugin to open classes & methods annotated with Spring annotations
+- There is one thing that causes friction for Kotlin + Spring interop
+
+[click] final! classes, methods and properties are final by default in Kotlin
+
+[click] but Spring creates CGLIB proxies for things like @Transactional or @Configuration
+
+[click] and a CGLIB proxy has to subclass your class - which it can't, if the class is final
+
+[click] it would be very inconvenient to use the `open` keyword everywhere, so instead use the `kotlin("plugin.spring")` plugin
+
+[click] it automatically configures the allOpen plugin to open classes & methods annotated with Spring annotations
 -->
 
 ---
@@ -834,7 +839,10 @@ kodee:
 @Service
 open class PetService {
     @Transactional
-    open fun scheduleVisit(petId: Long, at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)): Visit {
+    open fun scheduleVisit(
+      petId: Long,
+      at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)
+    ): Visit {
         ...
     }
 }
@@ -844,7 +852,10 @@ open class PetService {
 @Service
 class PetService {
     @Transactional
-    fun scheduleVisit(petId: Long, at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)): Visit {
+    fun scheduleVisit(
+      petId: Long,
+      at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)
+    ): Visit {
         ...
     }
 }
@@ -879,6 +890,11 @@ kodee:
 ---
 
 # JPA Compiler Plugin
+
+
+<DrawnAnnotation type="circle" text="()" label="NoArg constructore for Hibernate" />
+<DrawnAnnotation type="circle" text="open" label="added for proper subclassing by hibernate" occurrence="1" />
+<DrawnAnnotation type="circle" text="class Pet" label="NoArg constructore generated & class opened" :on="1" />
 
 ````md magic-move
 
@@ -937,7 +953,7 @@ kodee:
 
 <br />
 
-```kotlin
+```kts gradle
 plugins {
     kotlin("plugin.lombok")
 }
@@ -950,6 +966,10 @@ kodee:
 ---
 
 # Future Improvements for Kotlin Lombok Plugin
+
+
+<DrawnAnnotation type="circle" text="class Pet" label="misses the Builder" :at="1" :until="2" />
+<DrawnAnnotation type="circle" text="@Builder" label="Kotlin Plugin will generate Builder" :at="2" :until="3"  :geometry="{ label: { x: 0.5372, y: 0.2103 } }"/>
 
 ````md magic-move
 
@@ -1077,7 +1097,8 @@ object PetMapper : ObjectMappie<Pet, PetDto>
 ```
 
 ```kotlin
-Target PetDto::id automatically resolved from Pet::id but cannot assign source type Long? to target type Long
+Target PetDto::id automatically resolved from Pet::id 
+but cannot assign source type Long? to target type Long
 ```
 
 ```kotlin
@@ -1114,14 +1135,13 @@ every { pet.name } returns "Fido"
 ```kotlin
 @SpringBootTest
 class PetControllerTest {
-    @MockkBean
-    private lateinit var petService: PetService
-    
-    @Test
-    fun `should return pet`() {
-          every { petService.getPet(1L) } returns Pet(1L, "Fido")
-          //...
-    }
+  @MockkBean
+  private lateinit var petService: PetService
+  
+  @Test
+  fun `should return pet`() {
+    every { petService.getPet(1L) } returns Pet(1L, "Fido")
+  }
 }
 ```
 
@@ -1145,7 +1165,13 @@ kodee:
 - assertions
 - property testing
 
-<br />
+---
+kodee:
+variant: drinking
+position: corner
+---
+
+# Kotest
 
 ````md magic-move
 
@@ -1156,9 +1182,9 @@ class MyTests : FunSpec({
     "".length shouldBe 0
   }
 })
-`
-    val age = integer("age")
-    ``val breed = varchar("breed", 50)`kotlin
+```
+
+```kotlin
 class MyTests : ShouldSpec({
   should("return the length of the string") {
     "sammy".length shouldBe 5
@@ -1210,6 +1236,27 @@ kodee:
 - Generate Flyway migrations from Table definitions
 - Spring Boot integration
 
+
+---
+kodee:
+variant: drinking
+position: corner
+---
+
+# Exposed by JetBrains
+
+
+
+<DrawnAnnotation type="circle" text="LongIdTable" label="Provides Id Column" "/>
+<DrawnAnnotation type="circle" text="varchar" label="Typesafe column definition" " :geometry="{ label: { x: 0.6465, y: 0.5259 } }"/>
+<DrawnAnnotation type="circle" text="enumeration" label="built in enumeration support" "/>
+<DrawnAnnotation type="underline" text="PetTable.id eq id" label="typesafe comparisons" " :geometry="{ label: { x: 0.7121, y: 0.0482 } }"/>
+<DrawnAnnotation type="underline" text="LongEntity(id)" label="DAO definition" "/>
+<DrawnAnnotation type="underline" text="LongEntityClass" label="Provides CRUD" " :geometry="{ label: { x: 0.6779, y: 0.3720 } }"/>
+<DrawnAnnotation type="underline" text="val name by PetTable.name" label="Describes how to resolve entity field from Table" " :geometry="{ label: { x: 0.6590, y: 0.2833 } }"/>
+<DrawnAnnotation type="underline" text="PetEntity.new" label="creates and saves new PetEntity" " :geometry="{ label: { x: 0.6485, y: 0.4206 } }"/>
+<DrawnAnnotation type="underline" text="findById" label="also provided by companion" " :geometry="{ label: { x: 0.4784, y: 0.4978 } }"/>
+
 ````md magic-move
 
 ```kotlin
@@ -1249,6 +1296,9 @@ class PetEntity(id: EntityID<Long>) : LongEntity(id) {
     val breed by PetTable.breed
 }
 
+```
+
+```kotlin
 fun createPet() {
     PetEntity.new {
         name = "Loki"
@@ -1256,7 +1306,6 @@ fun createPet() {
         breed = Breed.CAT
     }
 }
-
 fun findPetById(petId: Long): PetEntity =  PetEntity.findById(petId)
 ```
 
