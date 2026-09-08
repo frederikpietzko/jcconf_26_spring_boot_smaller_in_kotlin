@@ -872,7 +872,13 @@ plugin {
 }
 ```
 
-<br />
+---
+kodee:
+  variant: wink
+  position: corner
+---
+
+# JPA Compiler Plugin
 
 ````md magic-move
 
