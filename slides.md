@@ -151,16 +151,10 @@ kodee:
 ---
 
 # Strict Nullability
-<style>                                                                                                                                                                                                                  
-.inline-compiler-error-message {                                                                                                                                                                                         
-  --inline-compiler-error-message-size: 0.5rem;                                                                                                                                                                          
-}                                                                                                                                                                                                                        
-</style>
-
 
 <DrawnAnnotation text="final var petName = pet.getName();" label="potentially throws NullPointerException" />
 <DrawnAnnotation text="pet.name" label="pet is smart cast to Pet!" :at="2" :until="6"/>
-<InlineCompilerError text="pet.name" message="Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable..." :on="1" >
+<InlineCompilerError text="pet.name" message="Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable..." :on="1" style="--inline-compiler-error-message-size: .9rem" >
 
 ````md magic-move
 
@@ -721,12 +715,22 @@ registerBean {
 -->
 
 ---
-kodee:
-  variant: wink
-  position: corner
----
 
 # Router DSL
+
+<style>
+.router-dsl-scroll {
+  max-height: 40vh;
+  overflow-y: auto;
+  border-radius: .5rem;
+}
+.router-dsl-scroll .slidev-code-wrapper,
+.router-dsl-scroll .slidev-code {
+  max-height: none;
+}
+</style>
+
+<div class="router-dsl-scroll">
 
 ````md magic-move
 
@@ -768,6 +772,8 @@ class Application
 ```
 
 ````
+
+</div>
 
 <!--
 - one more DSL I want to show you
