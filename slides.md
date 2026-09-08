@@ -257,7 +257,7 @@ kodee:
 
 
 <DrawnAnnotation text="is Scheduled -> result.visit" label="result is smart cast to Scheduled" :on="1" />
-<DrawnAnnotation text="if(result is Scheduled) return result.visit" label="Data flow based exhaustiveness" />
+<DrawnAnnotation text="if(result is Scheduled) return result.visit" label="Data flow based exhaustiveness"  :geometry="{ label: { x: 0.6299, y: 0.4887 } }"/>
 <InlineCompilerError text="when" message="when must be exhaustive" :at="4" :until="5">
 
 ````md magic-move
@@ -892,8 +892,8 @@ kodee:
 # JPA Compiler Plugin
 
 
-<DrawnAnnotation type="circle" text="()" label="NoArg constructore for Hibernate" />
-<DrawnAnnotation type="circle" text="open" label="added for proper subclassing by hibernate" occurrence="1" />
+<DrawnAnnotation type="circle" text="()" label="NoArg constructore for Hibernate"  :geometry="{ label: { x: 0.6787, y: 0.3447 } }"/>
+<DrawnAnnotation type="circle" text="open" label="added for proper subclassing by hibernate" occurrence="1"  :geometry="{ label: { x: 0.5253, y: 0.2051 } }"/>
 <DrawnAnnotation type="circle" text="class Pet" label="NoArg constructore generated & class opened" :on="1" />
 
 ````md magic-move
@@ -1247,15 +1247,16 @@ position: corner
 
 
 
-<DrawnAnnotation type="circle" text="LongIdTable" label="Provides Id Column" "/>
-<DrawnAnnotation type="circle" text="varchar" label="Typesafe column definition" " :geometry="{ label: { x: 0.6465, y: 0.5259 } }"/>
-<DrawnAnnotation type="circle" text="enumeration" label="built in enumeration support" "/>
-<DrawnAnnotation type="underline" text="PetTable.id eq id" label="typesafe comparisons" " :geometry="{ label: { x: 0.7121, y: 0.0482 } }"/>
-<DrawnAnnotation type="underline" text="LongEntity(id)" label="DAO definition" "/>
-<DrawnAnnotation type="underline" text="LongEntityClass" label="Provides CRUD" " :geometry="{ label: { x: 0.6779, y: 0.3720 } }"/>
-<DrawnAnnotation type="underline" text="val name by PetTable.name" label="Describes how to resolve entity field from Table" " :geometry="{ label: { x: 0.6590, y: 0.2833 } }"/>
-<DrawnAnnotation type="underline" text="PetEntity.new" label="creates and saves new PetEntity" " :geometry="{ label: { x: 0.6485, y: 0.4206 } }"/>
-<DrawnAnnotation type="underline" text="findById" label="also provided by companion" " :geometry="{ label: { x: 0.4784, y: 0.4978 } }"/>
+<DrawnAnnotation type="circle" text="LongIdTable" label="Provides Id Column" />
+<DrawnAnnotation type="circle" text="varchar" label="Typesafe column definition" :geometry="{ label: { x: 0.7214, y: 0.3385 } }"/>
+<DrawnAnnotation type="circle" text="enumeration" label="built in enumeration support"  :geometry="{ label: { x: 0.5973, y: 0.6284 } }"/>
+<DrawnAnnotation type="underline" text="PetTable.id eq id" label="typesafe comparisons" :geometry="{ label: { x: 0.6760, y: 0.3148 }, connector: { start: { x: 0.3434, y: 0.3319 }, end: { x: 0.5130, y: 0.3201 } } }"/>
+<DrawnAnnotation type="underline" text="this[PetTable.id]" label="typesafe access to columns" />
+<DrawnAnnotation type="underline" text="LongEntity(id)" label="DAO definition"  :geometry="{ label: { x: 0.7216, y: 0.0554 } }"/>
+<DrawnAnnotation type="underline" text="LongEntityClass" label="Provides CRUD"  :geometry="{ label: { x: 0.6786, y: 0.4173 } }"/>
+<DrawnAnnotation type="underline" text="val name by PetTable.name" label="Describes how to resolve entity field from Table" :geometry="{ label: { x: 0.5683, y: 0.6619 } }"/>
+<DrawnAnnotation type="underline" text="PetEntity.new" label="creates and saves new PetEntity" :geometry="{ label: { x: 0.6485, y: 0.4206 } }"/>
+<DrawnAnnotation type="underline" text="findById" label="also provided by companion" :geometry="{ label: { x: 0.4784, y: 0.4978 } }"/>
 
 ````md magic-move
 
