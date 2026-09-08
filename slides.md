@@ -8,6 +8,8 @@ drawings:
 comark: true
 duration: 60min
 ---
+<!-- @formatter:off -->
+
 
 ---
 name: "Why Spring Boot feels smaller in Kotlin"
@@ -74,32 +76,39 @@ kodee:
 
 <br />
 
+<DrawnAnnotation type="circle" text="requireNotNull" label="does the null check and throws an IllegalArgumentException with provided message" :on="1" :geometry="{ label: { x: 0.4848, y: 0.5216, width: 0.7395 } }">
+<DrawnAnnotation type="underline" text="PetServiceImpl(
+    private val repository: PetRepository,
+    private val validator: PetValidator,
+)" label="concise constructors & properties" :on="3" :geometry="{ label: { x: 0.5035, y: 0.6993 }, connector: { start: { x: 0.3978, y: 0.4599 }, end: { x: 0.4030, y: 0.6774 } } }">
+
+<DrawnAnnotation type="underline" text=": PetService" label="inheritance with `:`" :on="4">
+
 ````md magic-move
 
 ```java
 public Pet getPet(Long id) {
     return repository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Pet not found"));
+        .orElseThrow(() -> 
+                new IllegalArgumentException("Pet not found")
+        );
 }
 ```
 
 ```kotlin
-fun getPet(id: Long) = requireNotNull(repository.findByIdOrNull(id)) { "Pet not found" }
+fun getPet(id: Long) = requireNotNull(repository.findByIdOrNull(id)) {
+    "Pet not found"
+}
 ```
 
-````
-
-<br />
-
-````md magic-move
-
 ```java
-@PetService
+@Service
 class PetServiceImpl implements PetService {
     private final PetRepository repository;
     private final PetValidator validator;
     
-    public PetService(PetRepository repository, PetValidator validator) {
+    public PetService(PetRepository repository,
+                      PetValidator validator) {
         this.repository = repository;
         this.validator = validator;
     }
@@ -107,16 +116,24 @@ class PetServiceImpl implements PetService {
 ```
 
 ```kotlin
-@PetService
+@Service
 class PetServiceImpl(
     private val repository: PetRepository,
     private val validator: PetValidator,
 ) : PetService
 ```
 
-
-
+```kotlin
+@Service
+class PetServiceImpl(
+  private val repository: PetRepository,
+  private val validator: PetValidator,
+) : PetService
+```
 ````
+</DrawnAnnotation>
+</DrawnAnnotation>
+</DrawnAnnotation>
 
 <!--
 - For example Kotlin can infer return type
@@ -134,30 +151,42 @@ kodee:
 ---
 
 # Strict Nullability
+<style>                                                                                                                                                                                                                  
+.inline-compiler-error-message {                                                                                                                                                                                         
+  --inline-compiler-error-message-size: 0.5rem;                                                                                                                                                                          
+}                                                                                                                                                                                                                        
+</style>
+
+
+<DrawnAnnotation text="final var petName = pet.getName();" label="potentially throws NullPointerException" />
+<DrawnAnnotation text="pet.name" label="pet is smart cast to Pet!" :at="2" :until="6"/>
+<InlineCompilerError text="pet.name" message="Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable..." :on="1" >
 
 ````md magic-move
 
 ```java
 public Visit scheduleVisit(Long petId, OffsetDateTime at) {
     final var pet = petRepository.findById(petId).orElseNull();
-    final var petName = pet.getName(); // potentially throws NullPointerException
+    final var petName = pet.getName(); 
     return visitRepository.save(new Visit(petName, at)) 
 }
 ```
 
 ```kotlin
 fun scheduleVisit(petId: Long, at: OffsetDateTime): Visit {
-    val pet = petRepository.findByIdOrNull(petId) // Type: Pet?
-    val petName = pet.name // compiler error
+    val pet: Pet? = petRepository.findByIdOrNull(petId)
+    val petName = pet.name
     return visitRepository.save(Visit(petName, at))
 }
 ```
 
 ```kotlin
 fun scheduleVisit(petId: Long, at: OffsetDateTime): Visit {
-  val pet = petRepository.findByIdOrNull(petId) // Type: Pet?
-  if (pet == null) throw IllegalArgumentException("Pet with id: $petId not found!")
-  val petName = pet.name // Pet is smart cast to Pet
+  val pet: Pet? = petRepository.findByIdOrNull(petId) // Type: Pet?
+  if (pet == null) throw IllegalArgumentException(
+    "Pet with id: $petId not found!"
+  )
+  val petName = pet.name
   return visitRepository.save(Visit(petName, at))
 }
 ```
@@ -165,17 +194,20 @@ fun scheduleVisit(petId: Long, at: OffsetDateTime): Visit {
 ```kotlin
 
 fun scheduleVisit(petId: Long, at: OffsetDateTime): Visit {
-  val pet = petRepository.findByIdOrNull(petId) ?: throw IllegalArgumentException("Pet with id: $petId not found!")
-  val petName = pet.name // Pet is smart cast to Pet
+  val pet: Pet = petRepository.findByIdOrNull(petId) 
+      ?: throw IllegalArgumentException(
+        "Pet with id: $petId not found!"
+      )
+  val petName = pet.name 
   return visitRepository.save(Visit(petName, at))
 }
 ```
 
 ```kotlin
 fun scheduleVisit(petId: Long, at: OffsetDateTime): Visit {
-  val pet = petRepository.findByIdOrNull(petId) // Type: Pet?
+  val pet: Pet? = petRepository.findByIdOrNull(petId)
   requireNotNull(pet) { "Pet with id: $petId not found!" }
-  val petName = pet.name // Pet is smart cast to Pet
+  val petName = pet.name
   return visitRepository.save(Visit(petName, at))
 }
 ```
@@ -185,13 +217,15 @@ fun scheduleVisit(petId: Long, at: OffsetDateTime): Visit {
   val pet = requireNotNull(petRepository.findByIdOrNull(petId)) {
       "Pet with id: $petId not found!"
   } 
-  val petName = pet.name // Pet is smart cast to Pet
+  val petName = pet.name
   return visitRepository.save(Visit(petName, at))
 }
 ```
 
 ```kotlin
-inline fun <T : Any> requireNotNull(value: T?, lazyMessage: () -> Any): T {
+inline fun <T : Any> requireNotNull(
+  value: T?, lazyMessage: () -> Any
+): T {
   contract {
     returns() implies (value != null)
   }
@@ -205,6 +239,7 @@ inline fun <T : Any> requireNotNull(value: T?, lazyMessage: () -> Any): T {
 ```
 
 ````
+</InlineCompilerError>
 
 <!--
 - Kotlin is strict about nullability
@@ -225,6 +260,11 @@ kodee:
 ---
 
 # Smart Casts
+
+
+<DrawnAnnotation text="is Scheduled -> result.visit" label="result is smart cast to Scheduled" :on="1" />
+<DrawnAnnotation text="if(result is Scheduled) return result.visit" label="Data flow based exhaustiveness" />
+<InlineCompilerError text="when" message="when must be exhaustive" :at="4" :until="5">
 
 ````md magic-move
 
@@ -265,12 +305,9 @@ sealed interface SchedulingResult {
     data object VetOnVacation: SchedulingResult
 }
 
-fun scheduleVisit(petId: Long, at: OffsetDateTime): SchedulingResult
-
-
 return when(val result = scheduleVisit(...)) {
     is Scheduled -> result.visit
-    is SlotTaken -> error("Slot unavailable, taken by ${result.takenBy}")
+    is SlotTaken -> error("Slot unavailable")
     VetOnVacation -> error("Vet on vacation")
 }
 ```
@@ -283,13 +320,9 @@ sealed interface SchedulingResult {
     data object VetSick: SchedulingResult // newly added
 }
 
-fun scheduleVisit(petId: Long, at: OffsetDateTime): SchedulingResult
-
-
-// compiler error!
 return when(val result = scheduleVisit(...)) {
     is Scheduled -> result.visit
-    is SlotTaken -> error("Slot unavailable, taken by ${result.takenBy}")
+    is SlotTaken -> error("Slot unavailable")
     VetOnVacation -> error("Vet on vacation")
 }
 ```
@@ -302,24 +335,18 @@ sealed interface SchedulingResult {
     data object VetSick: SchedulingResult // newly added
 }
 
-fun scheduleVisit(petId: Long, at: OffsetDateTime): SchedulingResult
+if(result is Scheduled) return result.visit
 
-val result = scheduleVisit(...)
-
-if(result is Scheduled) {
-    return result.visit
-}
-
-// if we enable -Xdata-flow-based-exhaustiveness
 return when(result) {
-    // no longer needed to check Scheduled
-    is SlotTaken -> error("Slot unavailable, taken by ${result.takenBy}")
+    is SlotTaken -> error("Slot unavailable")
     VetOnVacation -> error("Vet on vacation")
     VetSick -> error("Vet is sick")
 }
 ```
 
 ````
+
+</InlineCompilerError> 
 
 <!--
 - I've already shown smart casts a bit
@@ -342,6 +369,9 @@ kodee:
 
 # Extension Functions
 
+<DrawnAnnotation text="fun toDto() = PetDto(id, name)" label="polluted Domain Model" />
+<DrawnAnnotation text="private fun Pet.toDto() = PetDto(id, name)" label="Extension Function in Controller" />
+
 ````md magic-move
 
 ```kotlin
@@ -349,7 +379,8 @@ val pet = repository.findByIdOrNull(petId)
 ```
 
 ```kotlin
-fun <T: Any, ID: Any> CrudRepository<T, ID>.findByIdOrNull(id: ID): T? = findById(id).orElse(null)
+fun <T: Any, ID: Any> CrudRepository<T, ID>.findByIdOrNull(id: ID): T? =
+    findById(id).orElse(null)
 ```
 
 ```kotlin
@@ -364,15 +395,6 @@ class Pet(
 ```
 
 ```kotlin
-package org.example.domain
-
-@Entity
-class Pet(
-    @Id
-    var id: Long? = null,
-    var name: String
-) 
-
 package org.example.api
 
 class PetController {
@@ -408,17 +430,36 @@ kodee:
 
 # Default Arguments
 
+<DrawnAnnotation text="at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)" :at="0" :until="1" />
+<DrawnAnnotation text="at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)" label="How to use this from Java?" :at="1" :until="2" />
+<DrawnAnnotation type="cirlce" text="@JvmOverloads" label="Generates Overloads for Java Callers" />
+
 ````md magic-move
 
 ```kotlin
-fun scheduleVisit(petId: Long, at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)) : Visit {
+fun scheduleVisit(
+  petId: Long,
+  at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)
+) : Visit {
     //...
 }
 ```
 
 ```kotlin
+fun scheduleVisit(
+  petId: Long,
+  at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)
+) : Visit {
+  //...
+}
+```
+
+```kotlin
 @JvmOverloads
-fun scheduleVisit(petId: Long, at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)) : Visit {
+fun scheduleVisit(
+  petId: Long, 
+  at: OffsetDateTime = OffsetDateTime.now() + Duration.ofDays(2)
+) : Visit {
   //...
 }
 ```
@@ -429,7 +470,10 @@ public Visit scheduleVisit(Long petId, OffsetDateTime at) {
 }
 
 public Visit scheduleVisit(Long petId) {
-    return scheduleVisit(petId, OffsetDateTime.now().plus(Duration.ofDays(2)))
+    return scheduleVisit(
+      petId,
+      OffsetDateTime.now().plus(Duration.ofDays(2))
+    );
 }
 ```
 
@@ -454,6 +498,9 @@ kodee:
 
 <br />
 
+<DrawnAnnotation type="circle" text="reified T: Any" label="allows access to class of generic" />
+<DrawnAnnotation type="circle" text="T::class.java" />
+
 ````md magic-move
 
 ```kotlin
@@ -475,7 +522,10 @@ val pet = jdbcTemplate.queryForObject<Pet>(...)
 ```
 
 ```kotlin
-inline fun <reified T: Any> RestOperations.getForEntity(url: String, vararg uriVariables: Any?): ResponseEntity<T> =
+inline fun <reified T: Any> RestOperations.getForEntity(
+  url: String,
+  vararg uriVariables: Any?
+): ResponseEntity<T> =
   getForEntity(url, T::class.java, *uriVariables)
 ```
 
@@ -520,33 +570,33 @@ kodee:
 ````md magic-move
 
 ```java
-    @Bean
+@Bean
 public SecurityFilterChain filterChain(HttpSecurity http) {
-    return http
-            .cors(cors -> cors.disable())
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .anyRequest().permitAll())
-            .formLogin(Customizer.withDefaults())
-            .httpBasic(Customizer.withDefaults())
-            .build();
+  return http
+      .cors(cors -> cors.disable())
+      .csrf(csrf -> csrf.disable())
+      .authorizeHttpRequests(auth -> auth
+              .requestMatchers("/admin/**").hasRole("ADMIN")
+              .anyRequest().permitAll())
+      .formLogin(Customizer.withDefaults())
+      .httpBasic(Customizer.withDefaults())
+      .build();
 }
 ```
 
 ```kotlin
 @Bean
 fun filterChain(http: HttpSecurity): SecurityFilterChain {
-    http {
-        cors { disable() }
-        csrf { disable() }
-        authorizeHttpRequests {
-            authorize("/admin/**", hasRole("ADMIN"))
-            authorize(anyRequest, authenticated)
-        }
-        formLogin { }
-        httpBasic { }
+  http {
+    cors { disable() }
+    csrf { disable() }
+    authorizeHttpRequests {
+        authorize("/admin/**", hasRole("ADMIN"))
+        authorize(anyRequest, authenticated)
     }
+    formLogin { }
+    httpBasic { }
+  }
   return http.build()
 }
 ```
@@ -555,11 +605,11 @@ fun filterChain(http: HttpSecurity): SecurityFilterChain {
 @Test
 public void testSomething() throws Exception {
   mockMvc.perform(
-                  MockMvcRequestBuilders.get("/pet/{id}", 1)
-                          .accept(MediaType.APPLICATION_JSON)
-          )
-          .andExpect(MockMvcResultMatchers.status().isOk())
-          .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1));
+        MockMvcRequestBuilders.get("/pet/{id}", 1)
+            .accept(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(MockMvcResultMatchers.status().isOk())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1));
 ```
 
 ```kotlin
@@ -578,17 +628,14 @@ fun `test something`() {
 
 ```java
 class Registrar implements BeanRegistrar {
-
   @Override
   public void register(BeanRegistry registry, Environment env) {
     registry.registerBean(PetService.class);
-
     if (env.matchesProfiles("dev")) {
       registry.registerBean(TestingController.class);
     }
   }
 }
-
 @Configuration
 @Import(Registrar.class)
 class Config {}
@@ -609,25 +656,19 @@ class Config
 
 ```java
 class Registrar implements BeanRegistrar {
-
   @Override
   public void register(BeanRegistry registry, Environment env) {
     registry.registerBean(PetService.class);
-
     if (env.matchesProfiles("dev")) {
       registry.registerBean(TestingController.class,
-              (c) -> c.supplier(context ->
-                      new TestingController(context.bean(PetService.class)
-                      )
-              )
+        (c) -> c.supplier(context ->
+          new TestingController(context.bean(PetService.class)
+          )
+        )
       );
     }
   }
 }
-
-@Configuration
-@Import(Registrar.class)
-class Config {}
 ```
 
 ```kotlin
@@ -637,10 +678,6 @@ class Registrar : BeanRegistrarDsl({
     registerBean { TestingController(bean()) }
   }
 })
-
-@Configration
-@Import(Registrar::class)
-class Config
 ```
 
 ```kotlin

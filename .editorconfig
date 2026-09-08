@@ -1,0 +1,4 @@
+# .editorconfig
+[*.md]
+ij_formatter_tags_enabled = true
+indent_size = 2
