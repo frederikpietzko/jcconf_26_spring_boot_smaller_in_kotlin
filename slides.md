@@ -7,24 +7,38 @@ drawings:
   persist: false
 comark: true
 duration: 60min
+kodee: welcome
+highlighter: shiki
 ---
 <!-- @formatter:off -->
 
 
----
-name: "Why Spring Boot feels smaller in Kotlin"
-layout: intro
-kodee:
-  variant: greeting
-  position: featured
-  size: large
----
+[//]: # (---)
 
-<h1 class="mt--15%">
+[//]: # (name: "Why Spring Boot feels smaller in Kotlin")
+
+[//]: # (layout: intro)
+
+[//]: # (kodee:)
+
+[//]: # (  variant: greeting)
+
+[//]: # (  position: featured)
+
+[//]: # (  size: large)
+
+[//]: # (---)
+
+<div class="mt--15% ml--5% max-w-60%">
+<h1 >
 Why Spring Boot feels smaller in Kotlin 
 </h1>
-
+<p>
 Frederik Pietzko
+</p>
+</div>
+
+
 
 ---
 kodee:
